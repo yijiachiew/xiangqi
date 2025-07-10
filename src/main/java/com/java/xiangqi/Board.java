@@ -1,3 +1,5 @@
+package com.java.xiangqi;
+
 import java.util.*;
 
 import coordinate.Move;
@@ -52,7 +54,7 @@ public class Board {
     private boolean gameOver = false;
 
     private boolean inCheck = false;
-    // Board with vanilla constructor setup
+    // com.java.xiangqi.Board with vanilla constructor setup
     public Board() {
         this.board = new ArrayList<>();
         generateBoard(initialSetup);
