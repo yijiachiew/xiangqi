@@ -33,6 +33,8 @@ public class Board {
     private HashMap<Colour, Boolean> playerInCheckMate = new HashMap<>();
     // Track a stack of board states
     private Stack<List<List<Position>>> boardStates = new Stack<>();
+    // List of chess pieces
+    private ArrayList<ChessPiece> pieces = new ArrayList<>();
 
     private final String[][] initialSetup = {
             {"車", "馬", "象", "士", "將", "士", "象", "馬", "車"},
@@ -78,6 +80,8 @@ public class Board {
                 Position position;
                 if (!pieceSymbol.equals("·")) {
                     ChessPiece piece = PieceFactory.createPiece(pieceSymbol);
+                    // Add piece to pieces list
+                    pieces.add(piece);
                     position = new Position(i, j, piece);
                     if (piece.getPieceType() == helper.PieceType.GENERAL) {
                         // New Player to track for check
@@ -239,7 +243,7 @@ public class Board {
         reset();
         while (!isGameOver()) {
             DisplayBoard();
-            playTurn();
+            playUserTurn();
             // Check for game over conditions
             evaluateCheckMate();
             // Check is any player is in check
@@ -254,7 +258,7 @@ public class Board {
      * Plays a single turn for the current player.
      * This method handles user input, validates the move, and applies it to the board.
      */
-    public void playTurn(){
+    public void playUserTurn(){
         //Get user input and convert the input string to get a Move object
         Scanner scanner = new Scanner(System.in);
         boolean validMove = false;
