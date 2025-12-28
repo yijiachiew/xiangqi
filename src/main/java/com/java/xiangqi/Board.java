@@ -122,7 +122,12 @@ public class Board {
         }
         boardStates.push(currentState);
     }
-    private void evaluateCheckMate(){
+
+    /**
+     * Evaluates if the current player is in checkmate.
+     * If the player is in check or in checkmate, we update the states for which player is in check or checkmate.
+     */
+    public void evaluateCheckMate(){
         // We first evaluate the current board that if the current player is in check
         boolean playerChecked = evaluateCheck(currentTurn);
         if (playerChecked){
@@ -180,8 +185,10 @@ public class Board {
     /**
     Evaluates if the current player is in check.
     This method checks if the current player's general is under threat from any opposing pieces.
+    @param player The colour of the current player to see if is in check.
+    @return true if the player is in check, false otherwise.
      */
-    private boolean evaluateCheck(Colour player){
+    public boolean evaluateCheck(Colour player){
         // Check if the current player's general is in check
         // Iterate the board and generate a list of valid moves for the current player
         for (List<Position> row : board) {
@@ -190,7 +197,8 @@ public class Board {
                     continue; // Skip empty positions
                 }
                 ChessPiece piece = pos.getPiece();
-                if (piece != null && piece.getColour() == player) {
+                if (piece != null && piece.getColour() != player) {
+                    //System.out.println("Evaluating piece: " + piece.getSymbol() + " at position (" + pos.getX() + "," + pos.getY() + ")");
                     List<Move> validMoves = getValidMoves(piece, pos);
                     // If the general is in check, return true
                     for (Move move : validMoves) {
@@ -213,6 +221,15 @@ public class Board {
 
     }
     /**
+     * Returns a boolean if a player is in checkmate
+     */
+    public boolean isInCheckMate(Colour player){
+        return playerInCheckMate.getOrDefault(player, false);
+    }
+    public boolean isInCheck(Colour player){
+        return playerInCheck.getOrDefault(player, false);
+    }
+    /**
      * Switches the turn to the next player.
      * If the current turn is RED, it switches to BLACK, and vice versa.
      * This method is called after a valid move is made.
@@ -220,6 +237,27 @@ public class Board {
     public void switchTurn (){
         currentTurn = (currentTurn == Colour.RED) ? Colour.BLACK : Colour.RED;
     }
+
+    /**
+     * Returns the current player's turn.
+     */
+    public Colour getCurrentTurn() {
+        return currentTurn;
+    }
+    public Position getPosition(int x, int y) {
+        return board.get(x).get(y);
+    }
+    public ChessPiece getPieceAtPosition(int x, int y) {
+        Position targetPos = getPosition(x, y);
+        if (targetPos.isEmpty()) {
+            return null;
+        }
+        return targetPos.getPiece();
+    }
+    public List<List<Position>> getBoard() {
+        return board;
+    }
+
     /**
     Returns game over state
      */
@@ -235,6 +273,12 @@ public class Board {
         currentTurn = Colour.RED;
         gameOver = false;
         inCheck = false;
+    }
+    /**
+     * Returns a list of all chess pieces on the board.
+     */
+    public ArrayList<ChessPiece> getAllPieces() {
+        return pieces;
     }
     /**
     Starts the game loop
@@ -277,13 +321,13 @@ public class Board {
                 String[] parts = input.split("");
 
                 if (parts.length != 4) {
-                    throw new IllegalArgumentException("Invalid input format. Please enter 4 numbers separated by spaces.");
+                    throw new IllegalArgumentException("Invalid input format. Please enter 4 numbers not separated by spaces.");
                 }
                 // Convert to 0-based index
-                int fromX = Integer.parseInt(parts[0]) - 1;
-                int fromY = Integer.parseInt(parts[1]) - 1;
-                int toX = Integer.parseInt(parts[2]) - 1;
-                int toY = Integer.parseInt(parts[3]) - 1;
+                int fromX = Integer.parseInt(parts[0]);
+                int fromY = Integer.parseInt(parts[1]);
+                int toX = Integer.parseInt(parts[2]);
+                int toY = Integer.parseInt(parts[3]);
                 //Validate this input
                 if (validateInput(fromX, fromY, toX, toY)){
                     //Now we validate the move
@@ -304,6 +348,9 @@ public class Board {
                             );
                             break;
                         }
+                    }
+                    if (!validMove) {
+                        System.out.println("Invalid move attempted. Please try again.");
                     }
 
                 }
@@ -346,6 +393,47 @@ public class Board {
 
 
     }
+
+    /**
+     * Plays a turn for the current player.
+     * @param: input of string representing the move.
+     */
+    public void playTurn(String stringInput){
+
+            String[] parts = stringInput.split("");
+            System.out.println(parts.toString());
+            if (parts.length != 4) {
+                throw new IllegalArgumentException("Invalid input format. Please enter 4 numbers not separated by spaces.");
+            }
+            // Convert to 0-based index
+            int fromX = Integer.parseInt(parts[0]);
+            int fromY = Integer.parseInt(parts[1]);
+            int toX = Integer.parseInt(parts[2]);
+            int toY = Integer.parseInt(parts[3]);
+            //Validate this input
+            if (validateInput(fromX, fromY, toX, toY)) {
+                System.out.println("Input validated");
+                //Now we validate the move
+                Position fromPos = board.get(fromX).get(fromY);
+                Position toPos = board.get(toX).get(toY);
+                ChessPiece piece = fromPos.getPiece();
+                List<Move> validMoves = getValidMoves(piece, fromPos);
+                // Check if the move within the valid moves
+                for (Move move : validMoves) {
+                    if (move.equals(fromPos, toPos)) {
+                        // If the move is valid, apply the move
+                        move.applyMove();
+                        switchTurn();
+
+                        break;
+                    }
+                }
+            }
+            else{
+                throw new IllegalArgumentException("Invalid move attempted.");
+            }
+        }
+
     /**
      * Returns a list of valid moves for a given piece at a specific position.
      * @param piece The chess piece to check for valid moves.
@@ -358,7 +446,7 @@ public class Board {
 
     public void DisplayBoard(){
         String output = "";
-        int rowDisplay = 1;
+        int rowDisplay = 0;
         for (List<Position> row : board) {
             output += rowDisplay++ + " ";
 
@@ -369,7 +457,7 @@ public class Board {
         }
         // Add column headers
         output += "  ";
-        for (int i = 1; i <= board.get(0).size(); i++) {
+        for (int i = 0; i <= board.get(0).size(); i++) {
             output += i + " ";
         }
         System.out.println(output);

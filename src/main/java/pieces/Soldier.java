@@ -26,7 +26,7 @@ public class Soldier extends ChessPiece{
         int x = pos.getX();
         int y = pos.getY();
         List<Move> validMoves = new java.util.ArrayList<>();
-        int forward = (this.getColour() == Colour.RED) ? 1 : -1; // Red moves down, Black moves up
+        int forward = (this.getColour() == Colour.RED) ? -1 : 1; // Red moves up, Black moves down
         // Forward move
         int newX = x + forward;
         int newY = y;

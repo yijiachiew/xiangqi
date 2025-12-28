@@ -1,5 +1,8 @@
-package com.java.xiangqi;
+package Controller;
 
+/*
+Compile and run the Spring Boot application here
+ */
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
