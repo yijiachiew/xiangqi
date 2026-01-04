@@ -43,6 +43,7 @@ public class Horse extends ChessPiece{
             }
 
             Position newPos = board.get(newX).get(newY);
+
             // Check if the position is empty or can be captured
             if (newPos.isEmpty() || canCapture(this, newPos.getPiece())) {
                 // Check if the first square in the direction of the move is empty
@@ -52,6 +53,7 @@ public class Horse extends ChessPiece{
 
                 if (midPos.isEmpty()) {
                     validMoves.add(new Move(pos, newPos));
+                    //System.out.println("Horse can move to: ("+ newPos +")" );
                 }
             }
         }

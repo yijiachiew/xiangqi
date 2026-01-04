@@ -425,9 +425,10 @@ public class Board {
                         move.applyMove();
                         switchTurn();
 
-                        break;
+                        return;
                     }
                 }
+                throw new IllegalArgumentException("Invalid move attempted. No valid moves");
             }
             else{
                 throw new IllegalArgumentException("Invalid move attempted.");

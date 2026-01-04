@@ -31,4 +31,10 @@ public class Move {
         source.emptyPiece();
 
     }
+    public String toString() {
+        return "Move{" +
+                "from=" + source +
+                ", to=" + destination +
+                '}';
+    }
 }

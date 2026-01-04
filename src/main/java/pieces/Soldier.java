@@ -37,7 +37,7 @@ public class Soldier extends ChessPiece{
             }
         }
         // After crossing the river, Soldier can move left or right
-        if ((this.getColour() == Colour.RED && x >= 5) || (this.getColour() == Colour.BLACK && x <= 4)) {
+        if ((this.getColour() == Colour.RED && x < 5) || (this.getColour() == Colour.BLACK && x > 4)) {
             // Left move
             newX = x;
             newY = y - 1;

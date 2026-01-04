@@ -28,8 +28,8 @@ public class Advisor extends ChessPiece {
         int y = pos.getY();
         List<Move> validMoves = new ArrayList<>();
         // Define the palace boundaries // HARDCODED
-        int rowStart = (getColour() == Colour.RED) ? 0 : 7;
-        int rowEnd = rowStart + 3;
+        int rowStart = (getColour() == Colour.RED) ? 7 : 0;
+        int rowEnd = rowStart + 2;
         int colStart = 3;
         int colEnd = 5;
         //List of directions
@@ -40,13 +40,16 @@ public class Advisor extends ChessPiece {
             int newX = x + dir[0];
             int newY = y + dir[1];
             // Check if the move is within the palace boundaries
-            if (newX >= rowStart && newX < rowEnd && newY >= colStart && newY <= colEnd) {
-                Position newPos = new Position(newX, newY);
+            if (newX >= rowStart && newX <= rowEnd && newY >= colStart && newY <= colEnd) {
+                Position newPos = board.get(newX).get(newY);
+                //System.out.println("Advisor can move to: ("+ newPos +")" );
                 // Check if the target position is empty or occupied by an opponent's piece
                 if (board.get(newX).get(newY).isEmpty() ||
                     board.get(newX).get(newY).getPiece().getColour() != this.getColour()) {
                     validMoves.add(new Move(pos, newPos));
                 }
+            } else{
+                //System.out.println("Advisor cannot move to: ("+ newX +"," + newY +") - out of palace bounds" );
             }
         }
 

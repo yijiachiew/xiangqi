@@ -52,12 +52,91 @@ public class General extends ChessPiece{
 
             // Check if the position is empty or can be captured
             if (newPos.isEmpty() || canCapture(this, newPos.getPiece())) {
-                // Must check that the move does not put the General in check
-                boolean inCheck = false;
+                // Check for Flying General rule
+                if (isFlyingGeneral(newPos, board, this.getColour())) {
+                    continue; // Invalid move due to Flying General rule
+                }
                 
                 validMoves.add(new Move(pos, newPos));
             }
         }
         return validMoves;
+    }
+
+    private boolean isFlyingGeneral(Position newPos, List<List<Position>> board, Colour myColour) {
+        // Find my new position (newPos)
+        // Find the enemy General
+        // Check if they are on the same column
+        // Check if there are any pieces between them
+
+        int myX = newPos.getX();
+        int myY = newPos.getY();
+
+        Position enemyGeneralPos = null;
+        
+        // Locate enemy general
+        for (List<Position> row : board) {
+            for (Position p : row) {
+                if (!p.isEmpty() && 
+                    p.getPiece().getPieceType() == PieceType.GENERAL && 
+                    p.getPiece().getColour() != myColour) {
+                    enemyGeneralPos = p;
+                    break;
+                }
+            }
+            if (enemyGeneralPos != null) break;
+        }
+
+        if (enemyGeneralPos == null) return false; // Should not happen in a valid game
+
+        int enemyX = enemyGeneralPos.getX();
+        int enemyY = enemyGeneralPos.getY();
+
+        // If not on the same column (Y), Flying General doesn't apply
+        if (myY != enemyY) {
+            return false; 
+        }
+
+        // Check vertical line between generals
+        int startX = Math.min(myX, enemyX) + 1;
+        int endX = Math.max(myX, enemyX);
+
+        for (int i = startX; i < endX; i++) {
+             // If any position between them is occupied, it's blocked, so NO flying general
+             // However, we must check if the current position 'pos' was the one blocking it?
+             // No, 'board' state still has 'this' general at 'pos'. 
+             // We are validating if moving TO 'newPos' causes a Flying General.
+             
+             // IMPORTANT: When checking the path, we must ignore the current position of the general moving
+             // because effectively it has moved to newPos.
+             // BUT: The general moves 1 step. 
+             // If it moves SIDEWAYS, it changes column.
+             // If it moves VERTICALLY, it stays on column.
+             
+             // The loop checks board.get(i).get(myY).
+             // If 'this' General is currently at board.get(i).get(myY), we should treat it as empty 
+             // because we are simulating it moving OUT of there to 'newPos'.
+             
+             // Actually, simplest logic:
+             // We iterate strictly between newPos and enemyPos.
+             // Since General only moves 1 step, 'newPos' is adjacent to 'pos'.
+             // If we move vertically, 'pos' will be outside the range (startX, endX) usually?
+             // No. If moving towards enemy, range shrinks. If moving away, range grows.
+             // If moving sideways, we enter a new column. Old column doesn't matter. New column matters.
+             
+             Position currentPosToCheck = board.get(i).get(myY);
+             
+             // If the position we are checking contains THIS piece (the one moving), skip it (treat as empty)
+             if (!currentPosToCheck.isEmpty() && currentPosToCheck.getPiece() == this) {
+                 continue; 
+             }
+             
+             if (!currentPosToCheck.isEmpty()) {
+                 return false; // Blocked
+             }
+        }
+
+        // If we get here, they are on same column with NO pieces in between
+        return true; 
     }
 }

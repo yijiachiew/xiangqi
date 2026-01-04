@@ -96,6 +96,22 @@ class CheckCheckmateTest {
         Board board = new Board(mateBoard, Colour.BLACK);
         board.evaluateCheckMate(); // Updates internal state
         
+        // Debugging output
+        if (board.isInCheck(Colour.BLACK)) {
+            System.out.println("DEBUG: Black is in Check.");
+        } else {
+             System.out.println("DEBUG: Black is NOT in Check.");
+        }
+        
+        if (board.isInCheckMate(Colour.BLACK)) {
+            System.out.println("DEBUG: Black is in Checkmate.");
+        } else {
+            System.out.println("DEBUG: Black is NOT in Checkmate.");
+            // Print valid moves if any
+             System.out.println("Debugging Valid Moves preventing checkmate...");
+             // This would require exposing board logic or iterating all pieces again here
+        }
+
         assertTrue(board.isInCheck(Colour.BLACK), "Black should be in check");
         assertTrue(board.isInCheckMate(Colour.BLACK), "Black should be in checkmate");
     }
