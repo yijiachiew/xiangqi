@@ -76,22 +76,30 @@ public class Controller {
     }
 
     @GetMapping("/legal_moves/{x}/{y}")
-    public ResponseEntity<List<Map<String, Integer>>> getLegalMoves(@PathVariable int x, @PathVariable int y) {
+    public ResponseEntity<List<Map<String, Integer>>> getLegalMoves(@PathVariable("x") int x, @PathVariable("y") int y) {
+        System.out.println("Fetching legal moves for position: " + x + ", " + y);
         List<Map<String, Integer>> legalMoves = new ArrayList<>();
         try {
              ChessPiece piece = board.getPieceAtPosition(x, y);
              if (piece != null) {
+                 System.out.println("Piece found: " + piece.getSymbol());
                  Position pos = board.getPosition(x, y);
                  List<Move> validMoves = board.getValidMoves(piece, pos);
+                 System.out.println("Found " + validMoves.size() + " valid moves");
                  for (Move move : validMoves) {
                      Map<String, Integer> moveMap = new HashMap<>();
                      moveMap.put("x", move.getDestination().getX());
                      moveMap.put("y", move.getDestination().getY());
                      legalMoves.add(moveMap);
+                     System.out.println("Valid move to: " + move.getDestination().getX() + ", " + move.getDestination().getY());
                  }
+             } else {
+                 System.out.println("No piece at position " + x + ", " + y);
              }
              return ResponseEntity.ok(legalMoves);
         } catch (Exception e) {
+            System.err.println("Error fetching legal moves: " + e.getMessage());
+            e.printStackTrace();
             return ResponseEntity.ok(new ArrayList<>());
         }
     }

@@ -33,7 +33,6 @@ public class Board {
     private HashMap<Colour, Boolean> playerInCheckMate = new HashMap<>();
     // Track a stack of board states
     private Stack<List<List<Position>>> boardStates = new Stack<>();
-    private Stack<Colour> turnStates = new Stack<>();
     // List of chess pieces
     private ArrayList<ChessPiece> pieces = new ArrayList<>();
 
@@ -104,9 +103,6 @@ public class Board {
     public void restoreBoardState(){
         if (!boardStates.isEmpty()) {
             board = boardStates.pop();
-            if (!turnStates.isEmpty()) {
-                currentTurn = turnStates.pop();
-            }
         } else {
             System.out.println("No previous board state to restore.");
         }
@@ -125,7 +121,6 @@ public class Board {
             currentState.add(rowCopy);
         }
         boardStates.push(currentState);
-        turnStates.push(currentTurn);
     }
 
     /**
@@ -427,7 +422,6 @@ public class Board {
                 for (Move move : validMoves) {
                     if (move.equals(fromPos, toPos)) {
                         // If the move is valid, apply the move
-                        saveState();
                         move.applyMove();
                         switchTurn();
 
